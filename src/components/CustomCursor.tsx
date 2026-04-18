@@ -1,43 +1,62 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 const CustomCursor = () => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [trailPositions, setTrailPositions] = useState<Array<{ x: number; y: number }>>([]);
+  const dotRef = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
+  const mouse = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+  const ring = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+  const rafRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-      setTrailPositions(prev => {
-        const newPositions = [{ x: e.clientX, y: e.clientY }, ...prev.slice(0, 4)];
-        return newPositions;
-      });
+    const onMove = (e: MouseEvent) => {
+      mouse.current = { x: e.clientX, y: e.clientY };
+      if (dotRef.current) {
+        dotRef.current.style.left = `${e.clientX}px`;
+        dotRef.current.style.top = `${e.clientY}px`;
+      }
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+    const animate = () => {
+      ring.current.x = lerp(ring.current.x, mouse.current.x, 0.1);
+      ring.current.y = lerp(ring.current.y, mouse.current.y, 0.1);
+      if (ringRef.current) {
+        ringRef.current.style.left = `${ring.current.x}px`;
+        ringRef.current.style.top = `${ring.current.y}px`;
+      }
+      rafRef.current = requestAnimationFrame(animate);
+    };
+    rafRef.current = requestAnimationFrame(animate);
+
+    const onEnter = (e: MouseEvent) => {
+      const t = e.target as Element;
+      if (t.closest('button, a, .card, [data-cursor]')) {
+        dotRef.current?.classList.add('hovering');
+        ringRef.current?.classList.add('hovering');
+      }
+    };
+    const onLeave = () => {
+      dotRef.current?.classList.remove('hovering');
+      ringRef.current?.classList.remove('hovering');
+    };
+
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseover', onEnter);
+    document.addEventListener('mouseout', onLeave);
+
+    return () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseover', onEnter);
+      document.removeEventListener('mouseout', onLeave);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
   }, []);
 
   return (
     <>
-      <div
-        className="cursor"
-        style={{
-          left: mousePosition.x - 4,
-          top: mousePosition.y - 4,
-        }}
-      />
-      {trailPositions.map((pos, index) => (
-        <div
-          key={index}
-          className="cursor-trail"
-          style={{
-            left: pos.x - 2,
-            top: pos.y - 2,
-            opacity: (4 - index) * 0.1,
-            transform: `scale(${1 - index * 0.1})`,
-          }}
-        />
-      ))}
+      <div id="cursor-dot" ref={dotRef} />
+      <div id="cursor-ring" ref={ringRef} />
     </>
   );
 };

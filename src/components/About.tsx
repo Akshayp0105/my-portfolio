@@ -1,74 +1,120 @@
-import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { motion, useInView, useMotionValue, useSpring } from 'framer-motion';
 
-const StatCard = ({ number, label, delay }: { number: number; label: string; delay: number }) => {
-  const [count, setCount] = useState(0);
+/* ── Animated count-up stat ──────────────────────────────────────────────── */
+function AnimatedNumber({ target, suffix = '+' }: { target: number; suffix?: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: '-50px' });
+  const raw = useMotionValue(0);
+  const spring = useSpring(raw, { stiffness: 60, damping: 20 });
+  const [display, setDisplay] = useState(0);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      const increment = number / 50;
-      const interval = setInterval(() => {
-        setCount(prev => {
-          if (prev >= number) {
-            clearInterval(interval);
-            return number;
-          }
-          return Math.ceil(prev + increment);
-        });
-      }, 30);
-      return () => clearInterval(interval);
-    }, delay * 1000);
+    if (inView) raw.set(target);
+  }, [inView, target, raw]);
 
-    return () => clearTimeout(timer);
-  }, [number, delay]);
+  useEffect(() => {
+    return spring.on('change', (v) => setDisplay(Math.round(v)));
+  }, [spring]);
 
-  return (
-    <motion.div
-      className="glass p-6 rounded-lg text-center"
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay }}
-      viewport={{ once: true }}
-    >
-      <div className="text-4xl font-space-grotesk font-bold text-accent-lime mb-2">
-        {count}+
-      </div>
-      <div className="text-white/50 text-sm font-inter">
-        {label}
-      </div>
-    </motion.div>
-  );
-};
+  return <span ref={ref}>{display}{suffix}</span>;
+}
+
+const stats = [
+  { number: 40, label: 'Projects Built', suffix: '+' },
+  { number: 5,  label: 'Hardware Projects', suffix: '+' },
+  { number: 200, label: 'Interviews Conducted', suffix: '+' },
+  { number: 1,  label: 'Startup Founded', suffix: '' },
+];
 
 const About = () => {
   return (
-    <section className="py-20 px-8 bg-gradient-radial from-bg-dark to-black">
-      <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-        <motion.div
-          initial={{ opacity: 0, x: -50 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
+    <section
+      id="about"
+      className="py-28 px-6 md:px-12 lg:px-20"
+      style={{ background: 'radial-gradient(ellipse at 60% 50%, #0d0d18 0%, #0a0a0f 70%)' }}
+    >
+      <div className="max-w-7xl mx-auto">
+        {/* Section label */}
+        <motion.p
+          className="section-label mb-4"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-3xl font-space-grotesk font-bold text-white mb-6">About Me</h2>
-          <p className="text-white/80 font-inter leading-relaxed max-w-md">
-            I'm Akshay P, a 20-year-old startup founder and fullstack developer from Kochi, Kerala.
-            Passionate about building innovative solutions that make a difference. Currently leading
-            multiple tech initiatives while pursuing excellence in software engineering.
-          </p>
-        </motion.div>
-        <motion.div
-          className="grid grid-cols-2 gap-6"
-          initial={{ opacity: 0, x: 50 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          viewport={{ once: true }}
-        >
-          <StatCard number={40} label="Projects" delay={0.1} />
-          <StatCard number={5} label="Hardware" delay={0.2} />
-          <StatCard number={200} label="Interviews" delay={0.3} />
-          <StatCard number={1} label="Startup" delay={0.4} />
-        </motion.div>
+          01 · About
+        </motion.p>
+
+        <div className="grid md:grid-cols-2 gap-16 items-center">
+          {/* Left — bio */}
+          <motion.div
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-4xl md:text-5xl font-space-grotesk font-bold text-white mb-8 leading-tight">
+              Building at the <br />
+              <span className="gradient-text">intersection</span> of <br />
+              design & code.
+            </h2>
+            <p className="text-white/70 font-inter leading-relaxed mb-6 max-w-md">
+              I'm Akshay P — a 20-year-old startup founder, fullstack developer, and community
+              builder from Kochi, Kerala. I turn ideas into products people actually use.
+            </p>
+            <p className="text-white/50 font-inter leading-relaxed max-w-md text-sm">
+              Currently pursuing B.Tech CSE at Toc H Institute of Science & Technology (Graduating June 2027),
+              while co-founding{' '}
+              <span className="text-gold">Korvet Innovations</span> — a Govt. of Kerala recognized
+              EdTech & business services startup.
+            </p>
+
+            <div className="mt-10 flex gap-6">
+              <a
+                href="https://github.com/Akshayp0105"
+                target="_blank"
+                rel="noreferrer"
+                className="text-white/50 hover:text-accent-lime transition-colors duration-300 text-sm font-inter"
+              >
+                GitHub ↗
+              </a>
+              <a
+                href="https://www.linkedin.com/in/akshay-p-6b889a288"
+                target="_blank"
+                rel="noreferrer"
+                className="text-white/50 hover:text-accent-purple transition-colors duration-300 text-sm font-inter"
+              >
+                LinkedIn ↗
+              </a>
+            </div>
+          </motion.div>
+
+          {/* Right — stat cards */}
+          <motion.div
+            className="grid grid-cols-2 gap-4"
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+            viewport={{ once: true }}
+          >
+            {stats.map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                className="glass card p-6 rounded-xl"
+                whileHover={{ scale: 1.04, borderColor: 'rgba(200,255,0,0.2)' }}
+                transition={{ delay: i * 0.08 }}
+              >
+                <div
+                  className="font-space-grotesk font-bold mb-1"
+                  style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', color: 'var(--lime)' }}
+                >
+                  <AnimatedNumber target={stat.number} suffix={stat.suffix} />
+                </div>
+                <div className="text-white/50 text-sm font-inter">{stat.label}</div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
       </div>
     </section>
   );
