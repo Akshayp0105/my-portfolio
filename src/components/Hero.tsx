@@ -4,23 +4,24 @@ import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { motion } from 'framer-motion';
 
-/* ── Typewriter hook ─────────────────────────────────────────────────────── */
-function useTypewriter(text: string, speed = 60, delay = 800) {
-  const [displayed, setDisplayed] = useState('');
-  useEffect(() => {
-    let i = 0;
-    const t = setTimeout(() => {
-      const id = setInterval(() => {
-        i++;
-        setDisplayed(text.slice(0, i));
-        if (i >= text.length) clearInterval(id);
-      }, speed);
-      return () => clearInterval(id);
-    }, delay);
-    return () => clearTimeout(t);
-  }, [text, speed, delay]);
-  return displayed;
-}
+/* ── Framer Motion Typewriter Config ─────────────────────────────────────── */
+const subtitleText = "Full Stack Developer · Startup Founder · Builder";
+const subtitleChars = subtitleText.split('');
+
+const subtitleContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.045,
+    },
+  },
+};
+
+const charVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1 },
+};
 
 /* ── Shader strings ──────────────────────────────────────────────────────── */
 const vertexShader = /* glsl */ `
@@ -188,7 +189,6 @@ function ParticleSphere({ count }: { count: number }) {
 
 /* ── Hero ─────────────────────────────────────────────────────────────────── */
 const Hero = () => {
-  const subtitle = useTypewriter('Full Stack Developer · Startup Founder · Builder', 55, 900);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -226,7 +226,7 @@ const Hero = () => {
 
       {/* ── UI layer (z-index 10) ── */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-20 pt-28 pb-16">
-        <div className="max-w-3xl">
+        <div className="hero-text-container">
           <motion.p
             className="section-label mb-6"
             initial={{ opacity: 0 }}
@@ -237,7 +237,7 @@ const Hero = () => {
           </motion.p>
 
           <motion.h1
-            className="font-space-grotesk font-black text-white leading-none mb-6"
+            className="font-space-grotesk font-black text-white leading-none mb-6 hero-title-fix"
             style={{ fontSize: 'clamp(52px, 9vw, 110px)' }}
             initial={{ opacity: 0, y: 60 }}
             animate={{ opacity: 1, y: 0 }}
@@ -252,12 +252,30 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.35 }}
           >
-            <span
-              className="font-inter text-xl md:text-2xl typewriter-cursor"
-              style={{ color: 'var(--lime)' }}
+            <motion.span
+              className="font-inter text-xl md:text-2xl hero-subtitle-fix"
+              variants={subtitleContainerVariants}
+              initial="hidden"
+              animate="visible"
             >
-              {subtitle}
-            </span>
+              {subtitleChars.map((char, i) => (
+                <motion.span key={i} variants={charVariants}>
+                  {char}
+                </motion.span>
+              ))}
+              <span
+                style={{
+                  display: 'inline-block',
+                  width: '2px',
+                  height: '1em',
+                  background: '#c8ff00',
+                  marginLeft: '3px',
+                  verticalAlign: 'middle',
+                  animation: 'blink 1s step-end infinite',
+                  animationDelay: '2.5s' // Accounts for typing time + parent fade-in delay
+                }}
+              />
+            </motion.span>
           </motion.div>
 
           <motion.div
