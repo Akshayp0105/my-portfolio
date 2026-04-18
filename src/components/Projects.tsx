@@ -8,7 +8,7 @@ const projects = [
     tech: ['React', 'Node.js', 'MongoDB', 'Express'],
     tag: 'Social Impact',
     color: '#ff6b6b',
-    link: 'https://github.com/Akshayp0105',
+    link: 'https://github.com/Akshayp0105/GasUllaVidu',
   },
   {
     title: 'E2S',
@@ -16,7 +16,7 @@ const projects = [
     tech: ['Python', 'Django', 'PostgreSQL', 'REST API'],
     tag: 'SaaS',
     color: '#4ecdc4',
-    link: 'https://github.com/Akshayp0105',
+    link: 'https://github.com/Akshayp0105/E2S',
   },
   {
     title: 'FactoryScan',
@@ -24,23 +24,23 @@ const projects = [
     tech: ['React', 'Python', 'scikit-learn', 'FastAPI'],
     tag: 'AI / ML',
     color: '#ffd16a',
-    link: 'https://github.com/Akshayp0105',
+    link: 'https://github.com/Akshayp0105/FactoryScan',
   },
   {
-    title: 'Gym Management',
-    description: 'Full-featured SaaS for fitness centres — billing, attendance, and analytics.',
-    tech: ['React', 'Node.js', 'MySQL', 'JWT'],
-    tag: 'SaaS',
+    title: 'Skillura',
+    description: 'An EdTech platform for learning, upskilling, and directly applying for jobs — bridging the gap between learning and employment.',
+    tech: ['React', 'Node.js', 'Firebase', 'MongoDB'],
+    tag: 'EdTech',
     color: '#6C63FF',
-    link: 'https://github.com/Akshayp0105',
+    link: 'https://github.com/Akshayp0105/skillaura',
   },
   {
-    title: 'Travel Booking App',
-    description: 'Seamless travel planner with itinerary builder and real-time availability.',
-    tech: ['React Native', 'Node.js', 'MongoDB'],
-    tag: 'SaaS',
-    color: '#ff9ff3',
-    link: 'https://github.com/Akshayp0105',
+    title: 'Smart Issue Solver',
+    description: 'A social web platform where citizens can report and collaboratively solve real societal issues — civic tech for community action.',
+    tech: ['React', 'Express', 'MongoDB', 'Maps API'],
+    tag: 'Social Impact',
+    color: '#00D2FF',
+    link: 'https://github.com/Akshayp0105/smart_issue_solver',
   },
   {
     title: 'Korvet Website',
@@ -48,7 +48,7 @@ const projects = [
     tech: ['React', 'Next.js', 'Tailwind', 'Framer'],
     tag: 'Branding',
     color: '#c8ff00',
-    link: 'https://github.com/Akshayp0105',
+    link: 'https://github.com/Korvetin/KorvetWeb',
   },
 ];
 
@@ -72,9 +72,12 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
       glareBorderRadius="12px"
       className="h-full"
     >
-      <div
+      <a
+        href={project.link}
+        target="_blank"
+        rel="noopener noreferrer"
         className="card glass rounded-xl p-6 h-full flex flex-col
-                   hover:border-white/20 transition-all duration-300 group"
+                   hover:border-white/20 transition-all duration-300 group block no-underline"
         data-cursor
       >
         {/* Top accent bar */}
@@ -123,17 +126,14 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
           ))}
         </div>
 
-        {/* Link */}
-        <a
-          href={project.link}
-          target="_blank"
-          rel="noreferrer"
-          className="text-xs font-inter transition-colors duration-300 flex items-center gap-1"
+        {/* Link Hover State */}
+        <div
+          className="text-xs font-inter transition-all duration-300 flex items-center gap-1 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 mt-auto"
           style={{ color: project.color }}
         >
-          View on GitHub <span className="text-base leading-none">↗</span>
-        </a>
-      </div>
+          View on GitHub <span className="text-base leading-none">→</span>
+        </div>
+      </a>
     </Tilt>
   </motion.div>
 );

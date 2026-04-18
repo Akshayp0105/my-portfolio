@@ -23,7 +23,7 @@ function AnimatedNumber({ target, suffix = '+' }: { target: number; suffix?: str
 const stats = [
   { number: 40, label: 'Projects Built', suffix: '+' },
   { number: 5,  label: 'Hardware Projects', suffix: '+' },
-  { number: 200, label: 'Interviews Conducted', suffix: '+' },
+  { number: 50, label: 'Interviews Conducted', suffix: '+' },
   { number: 1,  label: 'Startup Founded', suffix: '' },
 ];
 

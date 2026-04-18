@@ -6,7 +6,7 @@ const experiences = [
     role: 'Tech Lead',
     company: 'TinkerHub Toc H',
     type: 'Community',
-    duration: '2023 – Present',
+    duration: '2024 – 2025',
     description:
       'Driving technical initiatives, organising hackathons, and mentoring 100+ student developers across the campus chapter.',
     special: false,
@@ -16,7 +16,7 @@ const experiences = [
     role: 'Founder',
     company: 'CodeCatalyst Toc H',
     type: 'Community',
-    duration: '2024 – Present',
+    duration: '2024 – 2026',
     description:
       "Founded the college's premier dev community — running workshops, buildathons, and peer learning sessions.",
     special: false,
@@ -26,7 +26,7 @@ const experiences = [
     role: 'Data Analyst Intern',
     company: 'MedTourEasy',
     type: 'Industry',
-    duration: '2023',
+    duration: 'Jan 2025 – Mar 2025',
     description:
       'Generated visual reports, performed statistical analysis, and identified data trends. Work was analytics-focused, not software development.',
     special: false,
@@ -36,7 +36,7 @@ const experiences = [
     role: 'Co-Founder & CTO',
     company: 'Korvet Innovations',
     type: 'Startup',
-    duration: '2023 – Present',
+    duration: 'May 2025 – Present',
     description:
       'Leading product & engineering at our EdTech & business-services startup. Partners: T.I.M.E, Clifton\'s. Recognized by the Government of India.',
     special: true,
