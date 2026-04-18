@@ -8,6 +8,12 @@ const CustomCursor = () => {
   const rafRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
+    if (navigator.maxTouchPoints > 0) {
+      if (dotRef.current) dotRef.current.style.display = 'none';
+      if (ringRef.current) ringRef.current.style.display = 'none';
+      return;
+    }
+
     const onMove = (e: MouseEvent) => {
       mouse.current = { x: e.clientX, y: e.clientY };
       if (dotRef.current) {

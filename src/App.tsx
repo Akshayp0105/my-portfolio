@@ -1,14 +1,15 @@
-import { useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import CustomCursor from './components/CustomCursor';
 import Preloader from './components/Preloader';
 import Hero from './components/Hero';
-import About from './components/About';
-import Projects from './components/Projects';
-import Experience from './components/Experience';
-import Skills from './components/Skills';
-import Contact from './components/Contact';
 import './style.css';
+
+const About = React.lazy(() => import('./components/About'));
+const Projects = React.lazy(() => import('./components/Projects'));
+const Experience = React.lazy(() => import('./components/Experience'));
+const Skills = React.lazy(() => import('./components/Skills'));
+const Contact = React.lazy(() => import('./components/Contact'));
 
 const NAV_ITEMS = [
   { label: 'Work', href: '#projects' },
@@ -19,9 +20,34 @@ const NAV_ITEMS = [
 
 function App() {
   const [loaded, setLoaded] = useState(false);
+  const [scrollWidth, setScrollWidth] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      setScrollWidth((scrollY / height) * 100);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <div className="noise-bg min-h-screen font-inter" style={{ background: 'var(--bg)' }}>
+      {/* Scroll Progress Bar */}
+      <div 
+        style={{ 
+          position: 'fixed', 
+          top: 0, 
+          left: 0, 
+          height: '2px', 
+          background: '#c8ff00', 
+          width: `${scrollWidth}%`, 
+          zIndex: 100000, 
+          transition: 'width 0.1s ease-out' 
+        }} 
+      />
+
       {/* Skip to content */}
       <a href="#hero" className="skip-link">Skip to content</a>
 
@@ -78,11 +104,13 @@ function App() {
       {/* Main content — only renders after preloader */}
       <main id="main-content">
         <Hero />
-        <About />
-        <Projects />
-        <Experience />
-        <Skills />
-        <Contact />
+        <Suspense fallback={<div className="h-32 flex items-center justify-center text-white/50 text-sm">Loading...</div>}>
+          <About />
+          <Projects />
+          <Experience />
+          <Skills />
+          <Contact />
+        </Suspense>
       </main>
     </div>
   );

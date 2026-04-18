@@ -107,24 +107,24 @@ function buildParticlePositions(count: number): Float32Array {
   return arr;
 }
 
-const PARTICLE_COUNT = 2800;
-const INITIAL_POSITIONS = buildParticlePositions(PARTICLE_COUNT);
-const ORIGIN_POSITIONS  = INITIAL_POSITIONS.slice(); // immutable copy
-
 /* ── Particle sphere with mouse repulsion ────────────────────────────────── */
-function ParticleSphere() {
+function ParticleSphere({ count }: { count: number }) {
   const pointsRef = useRef<THREE.Points>(null);
   const geoRef    = useRef<THREE.BufferGeometry>(null);
   const mouseVec  = useRef(new THREE.Vector2(0, 0));
   const { camera } = useThree();
-  const posArr = useRef(INITIAL_POSITIONS.slice()); // mutable working copy
+  
+  const originPositions = useRef<Float32Array>(new Float32Array());
+  const posArr = useRef<Float32Array>(new Float32Array());
 
-  // Imperatively set buffer attribute to avoid R3F v9 JSX args requirement
   useEffect(() => {
-    if (!geoRef.current) return;
-    const attr = new THREE.BufferAttribute(posArr.current, 3);
-    geoRef.current.setAttribute('position', attr);
-  }, []);
+    const init = buildParticlePositions(count);
+    originPositions.current = init.slice();
+    posArr.current = init.slice();
+    if (geoRef.current) {
+      geoRef.current.setAttribute('position', new THREE.BufferAttribute(posArr.current, 3));
+    }
+  }, [count]);
 
   useEffect(() => {
     const onMouseMove = (e: MouseEvent) => {
@@ -146,13 +146,13 @@ function ParticleSphere() {
 
     const geo = pointsRef.current.geometry;
     const pos = geo.attributes.position as THREE.BufferAttribute;
-    if (!pos) return;
+    if (!pos || posArr.current.length === 0) return;
 
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
+    for (let i = 0; i < count; i++) {
       const ix = i * 3;
-      const ox = ORIGIN_POSITIONS[ix];
-      const oy = ORIGIN_POSITIONS[ix + 1];
-      const oz = ORIGIN_POSITIONS[ix + 2];
+      const ox = originPositions.current[ix];
+      const oy = originPositions.current[ix + 1];
+      const oz = originPositions.current[ix + 2];
 
       // World space position
       const worldPt = new THREE.Vector3(ox, oy, oz)
@@ -189,25 +189,36 @@ function ParticleSphere() {
 /* ── Hero ─────────────────────────────────────────────────────────────────── */
 const Hero = () => {
   const subtitle = useTypewriter('Builder · Founder · Engineer', 55, 900);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex items-center overflow-hidden"
+      className="relative h-screen flex items-center overflow-hidden"
       style={{ background: 'var(--bg)' }}
     >
+      {/* ── Mobile Blob Background (Performance) ── */}
+      {isMobile && <div className="mobile-blob" />}
+
       {/* ── 3D Canvas (absolute, full viewport) ── */}
       <Canvas
         className="hero-canvas"
         camera={{ position: [0, 0, 5], fov: 60 }}
         gl={{ antialias: true, alpha: true }}
-        style={{ position: 'absolute', inset: 0, zIndex: 0 }}
+        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}
       >
         <ambientLight intensity={0.35} />
         <directionalLight position={[5,  5, 5]}  intensity={1}   color="#c8ff00" />
         <directionalLight position={[-5,-3,-5]} intensity={0.5} color="#6C63FF" />
-        <AnimatedTorusKnot />
-        <ParticleSphere />
+        {!isMobile && <AnimatedTorusKnot />}
+        <ParticleSphere count={isMobile ? 800 : 2800} />
         <EffectComposer>
           <Bloom luminanceThreshold={0.3} intensity={1.2} mipmapBlur />
         </EffectComposer>
