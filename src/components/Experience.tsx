@@ -23,12 +23,12 @@ const experiences = [
     accent: '#c8ff00',
   },
   {
-    role: 'Software Intern',
+    role: 'Data Analyst Intern',
     company: 'MedTourEasy',
     type: 'Industry',
     duration: '2023',
     description:
-      'Built healthcare tourism features, improved UX flows, and shipped production-ready React components.',
+      'Generated visual reports, performed statistical analysis, and identified data trends. Work was analytics-focused, not software development.',
     special: false,
     accent: '#6C63FF',
   },
@@ -38,7 +38,7 @@ const experiences = [
     type: 'Startup',
     duration: '2023 – Present',
     description:
-      'Leading product & engineering at our EdTech & business-services startup. Partners: T.I.M.E, Clifton\'s. Govt. of Kerala recognised.',
+      'Leading product & engineering at our EdTech & business-services startup. Partners: T.I.M.E, Clifton\'s. Recognized by the Government of India.',
     special: true,
     accent: '#ffd700',
   },
@@ -66,6 +66,7 @@ const ExpCard = ({ exp, index }: { exp: Exp; index: number }) => {
               borderColor: 'rgba(255,215,0,0.3)',
               background: 'rgba(255,215,0,0.06)',
             }}
+            title="Indian Government recognized startup"
           >
             🏛 Govt. Recognised
           </span>

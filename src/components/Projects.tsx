@@ -12,9 +12,9 @@ const projects = [
   },
   {
     title: 'E2S',
-    description: 'Sponsorship marketplace bridging student events with corporate sponsors.',
+    description: 'A SaaS platform that connects students and organizations looking for event sponsorships — a two-sided marketplace for funding opportunities.',
     tech: ['Python', 'Django', 'PostgreSQL', 'REST API'],
-    tag: 'EdTech',
+    tag: 'SaaS',
     color: '#4ecdc4',
     link: 'https://github.com/Akshayp0105',
   },

@@ -188,7 +188,7 @@ function ParticleSphere({ count }: { count: number }) {
 
 /* ── Hero ─────────────────────────────────────────────────────────────────── */
 const Hero = () => {
-  const subtitle = useTypewriter('Builder · Founder · Engineer', 55, 900);
+  const subtitle = useTypewriter('Full Stack Developer · Startup Founder · Builder', 55, 900);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {

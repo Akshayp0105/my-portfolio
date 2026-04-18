@@ -59,15 +59,31 @@ const About = () => {
               design & code.
             </h2>
             <p className="text-white/70 font-inter leading-relaxed mb-6 max-w-md">
-              I'm Akshay P — a 20-year-old startup founder, fullstack developer, and community
+              I'm Akshay P — a 20-year-old startup founder, Full Stack Developer, and community
               builder from Kochi, Kerala. I turn ideas into products people actually use.
             </p>
             <p className="text-white/50 font-inter leading-relaxed max-w-md text-sm">
               Currently pursuing B.Tech CSE at Toc H Institute of Science & Technology (Graduating June 2027),
               while co-founding{' '}
-              <span className="text-gold">Korvet Innovations</span> — a Govt. of Kerala recognized
+              <span className="text-gold">Korvet Innovations</span> — a Government of India recognized
               EdTech & business services startup.
             </p>
+
+            <div className="mt-8 flex flex-wrap gap-2">
+              {['DevOps', 'Android App Development', 'IoT'].map((interest) => (
+                <span
+                  key={interest}
+                  className="skill-chip px-4 py-2 rounded-full text-xs font-inter transition-all duration-300 cursor-default"
+                  style={{
+                    background: '#6C63FF18',
+                    border: '1px solid #6C63FF50',
+                    color: '#6C63FF',
+                  }}
+                >
+                  {interest}
+                </span>
+              ))}
+            </div>
 
             <div className="mt-10 flex gap-6">
               <a
