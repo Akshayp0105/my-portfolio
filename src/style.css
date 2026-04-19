@@ -281,7 +281,12 @@ body {
   text-shadow: 0 2px 20px rgba(0,0,0,0.9), 0 1px 6px rgba(0,0,0,0.85);
   position: relative;
   z-index: 20;
-  white-space: nowrap;
+  white-space: normal;
+}
+@media (min-width: 768px) {
+  .hero-subtitle-fix {
+    white-space: nowrap;
+  }
 }
 
 /* ── Hero Text Container ──────────────────────────────────────────────────── */

@@ -218,7 +218,9 @@ const Hero = () => {
         <directionalLight position={[5,  5, 5]}  intensity={1}   color="#c8ff00" />
         <directionalLight position={[-5,-3,-5]} intensity={0.5} color="#6C63FF" />
         {!isMobile && <AnimatedTorusKnot />}
-        <ParticleSphere count={isMobile ? 800 : 2800} />
+        <group position={[isMobile ? 0 : 2.2, 0, 0]}>
+          <ParticleSphere count={isMobile ? 800 : 2800} />
+        </group>
         <EffectComposer>
           <Bloom luminanceThreshold={0.3} intensity={1.2} mipmapBlur />
         </EffectComposer>
