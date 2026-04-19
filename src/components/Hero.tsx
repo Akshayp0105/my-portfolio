@@ -73,8 +73,7 @@ const fragmentShader = /* glsl */ `
 `;
 
 /* ── Animated TorusKnot ──────────────────────────────────────────────────── */
-function AnimatedTorusKnot() {
-  const meshRef  = useRef<THREE.Mesh>(null);
+function AnimatedTorusKnot({ meshRef }: { meshRef: React.RefObject<THREE.Mesh> }) {
   const wireRef  = useRef<THREE.Mesh>(null);
   const matRef   = useRef<THREE.ShaderMaterial>(null);
   const geomRef  = useRef<THREE.TorusKnotGeometry | null>(null);
@@ -101,8 +100,8 @@ function AnimatedTorusKnot() {
   });
 
   return (
-    <group position={[1.4, 0.2, 0]}>
-      <mesh ref={meshRef} geometry={geomRef.current}>
+    <>
+      <mesh ref={meshRef} geometry={geomRef.current} position={[2.4, 0.2, 0]}>
         <shaderMaterial
           ref={matRef}
           vertexShader={vertexShader}
@@ -110,10 +109,10 @@ function AnimatedTorusKnot() {
           uniforms={{ uTime: { value: 0 } }}
         />
       </mesh>
-      <mesh ref={wireRef} geometry={geomRef.current}>
+      <mesh ref={wireRef} geometry={geomRef.current} position={[2.4, 0.2, 0]}>
         <meshBasicMaterial color="#c8ff00" wireframe opacity={0.25} transparent />
       </mesh>
-    </group>
+    </>
   );
 }
 
@@ -133,9 +132,7 @@ function buildParticlePositions(count: number): Float32Array {
   return arr;
 }
 
-/* ── Particle sphere with mouse repulsion ────────────────────────────────── */
-function ParticleSphere({ count }: { count: number }) {
-  const pointsRef = useRef<THREE.Points>(null);
+function ParticleSphere({ count, particlesRef }: { count: number, particlesRef: React.RefObject<THREE.Points> }) {
   const geoRef    = useRef<THREE.BufferGeometry>(null);
   const mouseVec  = useRef(new THREE.Vector2(0, 0));
   const { camera } = useThree();
@@ -162,15 +159,15 @@ function ParticleSphere({ count }: { count: number }) {
   }, []);
 
   useFrame(({ clock }) => {
-    if (!pointsRef.current) return;
+    if (!particlesRef.current) return;
 
     // Slow Y rotation
-    pointsRef.current.rotation.y = clock.getElapsedTime() * 0.06;
+    particlesRef.current.rotation.y = clock.getElapsedTime() * 0.06;
 
     const ray = new THREE.Raycaster();
     ray.setFromCamera(mouseVec.current, camera);
 
-    const geo = pointsRef.current.geometry;
+    const geo = particlesRef.current.geometry;
     const pos = geo.attributes.position as THREE.BufferAttribute;
     if (!pos || posArr.current.length === 0) return;
 
@@ -182,7 +179,7 @@ function ParticleSphere({ count }: { count: number }) {
 
       // World space position
       const worldPt = new THREE.Vector3(ox, oy, oz)
-        .applyMatrix4(pointsRef.current.matrixWorld);
+        .applyMatrix4(particlesRef.current.matrixWorld);
 
       const dist = ray.ray.distanceToPoint(worldPt);
       const repelStrength = Math.max(0, 1 - dist / 1.2) * 0.6;
@@ -199,7 +196,7 @@ function ParticleSphere({ count }: { count: number }) {
   });
 
   return (
-    <points ref={pointsRef}>
+    <points ref={particlesRef}>
       <bufferGeometry ref={geoRef} />
       <pointsMaterial
         color="#6C63FF"
@@ -209,6 +206,35 @@ function ParticleSphere({ count }: { count: number }) {
         opacity={0.65}
       />
     </points>
+  );
+}
+
+/* ── Scene Container to Sync Positions ────────────────────────────────────── */
+function SceneContainer({ isMobile }: { isMobile: boolean }) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const particlesRef = useRef<THREE.Points>(null);
+
+  useFrame(() => {
+    if (particlesRef.current && meshRef.current) {
+      particlesRef.current.position.x = meshRef.current.position.x;
+      particlesRef.current.position.y = meshRef.current.position.y;
+    } else if (particlesRef.current && isMobile) {
+      particlesRef.current.position.x = 2.4;
+      particlesRef.current.position.y = 0.2;
+    }
+  });
+
+  return (
+    <>
+      <ambientLight intensity={0.35} />
+      <directionalLight position={[5,  5, 5]}  intensity={1}   color="#c8ff00" />
+      <directionalLight position={[-5,-3,-5]} intensity={0.5} color="#6C63FF" />
+      {!isMobile && <AnimatedTorusKnot meshRef={meshRef} />}
+      <ParticleSphere count={isMobile ? 800 : 2800} particlesRef={particlesRef} />
+      <EffectComposer>
+        <Bloom luminanceThreshold={0.3} luminanceSmoothing={0.9} intensity={0.8} mipmapBlur={true} />
+      </EffectComposer>
+    </>
   );
 }
 
@@ -406,16 +432,7 @@ const Hero = () => {
             camera.lookAt(0, 0, 0);
           }}
         >
-          <ambientLight intensity={0.35} />
-          <directionalLight position={[5,  5, 5]}  intensity={1}   color="#c8ff00" />
-          <directionalLight position={[-5,-3,-5]} intensity={0.5} color="#6C63FF" />
-          {!isMobile && <AnimatedTorusKnot />}
-          <group position={[1.4, 0.2, 0]}>
-            <ParticleSphere count={isMobile ? 800 : 2800} />
-          </group>
-          <EffectComposer>
-            <Bloom luminanceThreshold={0.3} luminanceSmoothing={0.9} intensity={0.8} mipmapBlur={true} />
-          </EffectComposer>
+          <SceneContainer isMobile={isMobile} />
         </Canvas>
       </div>
 
