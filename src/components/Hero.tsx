@@ -88,12 +88,10 @@ function AnimatedTorusKnot() {
     if (meshRef.current) {
       meshRef.current.rotation.x = t * 0.3;
       meshRef.current.rotation.y = t * 0.2;
-      meshRef.current.position.y = Math.min(meshRef.current.position.y, -0.3);
     }
     if (wireRef.current) {
       wireRef.current.rotation.x = t * 0.3;
       wireRef.current.rotation.y = t * 0.2;
-      wireRef.current.position.y = Math.min(wireRef.current.position.y, -0.3);
     }
     if (matRef.current) {
       matRef.current.uniforms.uTime.value = t;
@@ -101,7 +99,7 @@ function AnimatedTorusKnot() {
   });
 
   return (
-    <group position={[1.4, -0.4, 0]}>
+    <group position={[1.4, -0.1, 0]}>
       <mesh ref={meshRef} geometry={geomRef.current}>
         <shaderMaterial
           ref={matRef}
@@ -410,7 +408,7 @@ const Hero = () => {
           <directionalLight position={[5,  5, 5]}  intensity={1}   color="#c8ff00" />
           <directionalLight position={[-5,-3,-5]} intensity={0.5} color="#6C63FF" />
           {!isMobile && <AnimatedTorusKnot />}
-          <group position={[1.4, 0, 0]}>
+          <group position={[1.4, -0.1, 0]}>
             <ParticleSphere count={isMobile ? 800 : 2800} />
           </group>
           <EffectComposer>
