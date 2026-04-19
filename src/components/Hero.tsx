@@ -228,28 +228,33 @@ const Hero = () => {
   const smoothX = useSpring(mouseX, springConfig);
   const smoothY = useSpring(mouseY, springConfig);
   
-  const rotateX = useTransform(smoothY, [-1, 1], [3, -3]);
-  const rotateY = useTransform(smoothX, [-1, 1], [-4, 4]);
+  const rotateX = useTransform(smoothY, [-1, 1], ["3deg", "-3deg"]);
+  const rotateY = useTransform(smoothX, [-1, 1], ["-4deg", "4deg"]);
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const x = (e.clientX / window.innerWidth) * 2 - 1;
-    const y = (e.clientY / window.innerHeight) * 2 - 1;
-    mouseX.set(x);
-    mouseY.set(y);
-  };
-  
-  const handleMouseLeave = () => {
-    mouseX.set(0);
-    mouseY.set(0);
-  };
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const x = (e.clientX / window.innerWidth) * 2 - 1;
+      const y = (e.clientY / window.innerHeight) * 2 - 1;
+      mouseX.set(x);
+      mouseY.set(y);
+    };
+    const handleMouseLeave = () => {
+      mouseX.set(0);
+      mouseY.set(0);
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    document.documentElement.addEventListener('mouseleave', handleMouseLeave);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      document.documentElement.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, [mouseX, mouseY]);
 
   return (
     <section
       id="hero"
       className="hero-section"
       style={{ background: 'var(--bg)' }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
     >
       {/* ── Mobile Blob Background (Performance) ── */}
       {isMobile && <div className="mobile-blob" />}
@@ -368,7 +373,7 @@ const Hero = () => {
             <span style={{ margin: '0 12px', color: 'rgba(255,255,255,0.15)' }}>·</span>
             <StatCounter end={1} suffix="" label="Startup" />
             <span style={{ margin: '0 12px', color: 'rgba(255,255,255,0.15)' }}>·</span>
-            <StatCounter end={200} suffix="+" label="Interviews" />
+            <StatCounter end={50} suffix="+" label="Interviews" />
           </motion.div>
 
           <motion.div
