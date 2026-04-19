@@ -207,14 +207,11 @@ body {
   flex-shrink: 0;
 }
 
-/* ── Hero Grid Layout ─────────────────────────────────────────────────────── */
+/* ── Hero Layout Structure ──────────────────────────────────────────────────── */
 .hero-section {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: center;
-  height: 100vh;
-  width: 100%;
   position: relative;
+  width: 100%;
+  height: 100vh;
   overflow: hidden;
 }
 
@@ -229,25 +226,25 @@ body {
 }
 
 .hero-text-block {
-  padding-left: clamp(32px, 6vw, 96px);
-  padding-right: 24px;
-  z-index: 20;
   position: relative;
+  z-index: 20;
+  padding-left: clamp(32px, 6vw, 96px);
+  padding-top: 0;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100vh;
 }
 
 .hero-canvas-block {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-
-@media (max-width: 768px) {
-  .hero-section {
-    grid-template-columns: 1fr;
-  }
-  .hero-canvas-block {
-    height: 50vh;
-  }
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1;
+  pointer-events: none;
 }
 
 /* ── 3D Globe container ───────────────────────────────────────────────────── */
