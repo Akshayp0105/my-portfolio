@@ -218,6 +218,16 @@ body {
   overflow: hidden;
 }
 
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 55%; height: 100%;
+  background: radial-gradient(ellipse at left center, transparent 30%, #0a0a0f 75%);
+  z-index: 5;
+  pointer-events: none;
+}
+
 .hero-text-block {
   padding-left: clamp(32px, 6vw, 96px);
   padding-right: 24px;

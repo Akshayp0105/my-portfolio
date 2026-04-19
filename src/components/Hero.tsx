@@ -2,7 +2,30 @@ import { useEffect, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useTransform, animate, useSpring } from 'framer-motion';
+
+function StatCounter({ end, suffix = "", label }: { end: number, suffix?: string, label: string }) {
+  const count = useMotionValue(0);
+  const rounded = useTransform(count, Math.round);
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    const controls = animate(count, end, { duration: 1.5, delay: 1.2, ease: "easeOut" });
+    return controls.stop;
+  }, [count, end]);
+
+  useEffect(() => {
+    const unsubscribe = rounded.on("change", (v) => setDisplay(v));
+    return () => unsubscribe();
+  }, [rounded]);
+
+  return (
+    <span>
+      <span style={{ color: '#c8ff00' }}>{display}{suffix}</span>{' '}
+      <span>{label}</span>
+    </span>
+  );
+}
 
 /* ── Framer Motion Typewriter Config ─────────────────────────────────────── */
 const subtitleText = "Full Stack Developer · Startup Founder · Builder";
@@ -99,10 +122,10 @@ function buildParticlePositions(count: number): Float32Array {
   for (let i = 0; i < count; i++) {
     // Fibonacci sphere distribution for even spread
     const y = 1 - (i / (count - 1)) * 2;
-    const radius = 3.2 * Math.sqrt(1 - y * y);
+    const radius = 2.8 * Math.sqrt(1 - y * y);
     const theta = phi * i;
     arr[i * 3]     = Math.cos(theta) * radius + (Math.random() - 0.5) * 0.08;
-    arr[i * 3 + 1] = y * 3.2            + (Math.random() - 0.5) * 0.08;
+    arr[i * 3 + 1] = y * 2.8            + (Math.random() - 0.5) * 0.08;
     arr[i * 3 + 2] = Math.sin(theta) * radius + (Math.random() - 0.5) * 0.08;
   }
   return arr;
@@ -198,17 +221,58 @@ const Hero = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  
+  const springConfig = { stiffness: 80, damping: 20 };
+  const smoothX = useSpring(mouseX, springConfig);
+  const smoothY = useSpring(mouseY, springConfig);
+  
+  const rotateX = useTransform(smoothY, [-1, 1], [3, -3]);
+  const rotateY = useTransform(smoothX, [-1, 1], [-4, 4]);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const x = (e.clientX / window.innerWidth) * 2 - 1;
+    const y = (e.clientY / window.innerHeight) * 2 - 1;
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+  
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
+
   return (
     <section
       id="hero"
       className="hero-section"
       style={{ background: 'var(--bg)' }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
     >
       {/* ── Mobile Blob Background (Performance) ── */}
       {isMobile && <div className="mobile-blob" />}
 
+      {/* ── Vertical Accent Line ── */}
+      <div 
+        style={{
+          position: 'absolute',
+          left: 'clamp(16px, 3vw, 48px)',
+          top: '20%',
+          height: '60%',
+          width: '1px',
+          background: 'linear-gradient(to bottom, transparent, #c8ff00, transparent)',
+          zIndex: 10
+        }}
+      />
+
       {/* ── UI layer ── */}
-      <div className="hero-text-block">
+      <motion.div 
+        className="hero-text-block"
+        style={{ rotateX, rotateY, transformPerspective: 1200 }}
+        transition={{ type: "spring", stiffness: 80, damping: 20 }}
+      >
         <motion.p
           className="section-label mb-6"
           initial={{ opacity: 0, x: -20 }}
@@ -290,6 +354,25 @@ const Hero = () => {
 
           <motion.div
             style={{
+              fontSize: '12px',
+              color: 'rgba(255,255,255,0.45)',
+              fontFamily: 'monospace',
+              letterSpacing: '0.06em',
+              marginTop: '28px'
+            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 1.2 }}
+          >
+            <StatCounter end={40} suffix="+" label="Projects" />
+            <span style={{ margin: '0 12px', color: 'rgba(255,255,255,0.15)' }}>·</span>
+            <StatCounter end={1} suffix="" label="Startup" />
+            <span style={{ margin: '0 12px', color: 'rgba(255,255,255,0.15)' }}>·</span>
+            <StatCounter end={200} suffix="+" label="Interviews" />
+          </motion.div>
+
+          <motion.div
+            style={{
               fontFamily: "'Courier New', Courier, monospace",
               fontSize: "13px",
               color: "rgba(160, 170, 200, 0.65)",
@@ -304,13 +387,17 @@ const Hero = () => {
           >
             // B.Tech CSE · TIST Kochi · 2023 – 2027
           </motion.div>
-      </div>
+      </motion.div>
 
       {/* ── 3D Canvas ── */}
       <div className="hero-canvas-block">
         <Canvas
           camera={{ position: [0, 0, 5], fov: 60 }}
           gl={{ antialias: true, alpha: true }}
+          onCreated={({ gl, camera }) => {
+            gl.setClearColor('#0a0a0f', 1);
+            camera.lookAt(0, 0, 0);
+          }}
         >
           <ambientLight intensity={0.35} />
           <directionalLight position={[5,  5, 5]}  intensity={1}   color="#c8ff00" />
@@ -320,7 +407,7 @@ const Hero = () => {
             <ParticleSphere count={isMobile ? 800 : 2800} />
           </group>
           <EffectComposer>
-            <Bloom luminanceThreshold={0.3} intensity={1.2} mipmapBlur />
+            <Bloom luminanceThreshold={0.3} luminanceSmoothing={0.9} intensity={0.85} mipmapBlur />
           </EffectComposer>
         </Canvas>
       </div>
