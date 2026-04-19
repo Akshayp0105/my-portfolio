@@ -76,7 +76,7 @@ function AnimatedTorusKnot() {
   });
 
   return (
-    <group>
+    <group position={[2.2, 0, 0]}>
       <mesh ref={meshRef} geometry={geomRef.current}>
         <shaderMaterial
           ref={matRef}
@@ -238,7 +238,7 @@ const Hero = () => {
 
           <motion.h1
             className="font-space-grotesk font-black text-white leading-none mb-6 hero-title-fix"
-            style={{ fontSize: 'clamp(52px, 9vw, 110px)' }}
+            style={{ fontSize: 'clamp(52px, 7vw, 88px)' }}
             initial={{ opacity: 0, y: 60 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
