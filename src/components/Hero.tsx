@@ -99,7 +99,7 @@ function AnimatedTorusKnot() {
   });
 
   return (
-    <group position={[0, 0, 0]}>
+    <group position={[2.5, 0, 0]}>
       <mesh ref={meshRef} geometry={geomRef.current}>
         <shaderMaterial
           ref={matRef}
@@ -254,7 +254,7 @@ const Hero = () => {
     <section
       id="hero"
       className="hero-section"
-      style={{ background: 'var(--bg)' }}
+      style={{ background: 'transparent' }}
     >
       {/* ── Mobile Blob Background (Performance) ── */}
       {isMobile && <div className="mobile-blob" />}
@@ -408,11 +408,11 @@ const Hero = () => {
           <directionalLight position={[5,  5, 5]}  intensity={1}   color="#c8ff00" />
           <directionalLight position={[-5,-3,-5]} intensity={0.5} color="#6C63FF" />
           {!isMobile && <AnimatedTorusKnot />}
-          <group position={[0, 0, 0]}>
+          <group position={[2.5, 0, 0]}>
             <ParticleSphere count={isMobile ? 800 : 2800} />
           </group>
           <EffectComposer>
-            <Bloom luminanceThreshold={0.3} luminanceSmoothing={0.9} intensity={0.85} mipmapBlur />
+            <Bloom luminanceThreshold={0.3} luminanceSmoothing={0.9} intensity={0.8} mipmapBlur={true} />
           </EffectComposer>
         </Canvas>
       </div>
