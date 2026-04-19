@@ -76,7 +76,7 @@ function AnimatedTorusKnot() {
   });
 
   return (
-    <group position={[2.2, 0, 0]}>
+    <group position={[0, 0, 0]}>
       <mesh ref={meshRef} geometry={geomRef.current}>
         <shaderMaterial
           ref={matRef}
@@ -201,52 +201,37 @@ const Hero = () => {
   return (
     <section
       id="hero"
-      className="relative h-screen flex items-center overflow-hidden"
+      className="hero-section"
       style={{ background: 'var(--bg)' }}
     >
       {/* ── Mobile Blob Background (Performance) ── */}
       {isMobile && <div className="mobile-blob" />}
 
-      {/* ── 3D Canvas (absolute, full viewport) ── */}
-      <Canvas
-        className="hero-canvas"
-        camera={{ position: [0, 0, 5], fov: 60 }}
-        gl={{ antialias: true, alpha: true }}
-        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}
-      >
-        <ambientLight intensity={0.35} />
-        <directionalLight position={[5,  5, 5]}  intensity={1}   color="#c8ff00" />
-        <directionalLight position={[-5,-3,-5]} intensity={0.5} color="#6C63FF" />
-        {!isMobile && <AnimatedTorusKnot />}
-        <group position={[isMobile ? 0 : 2.2, 0, 0]}>
-          <ParticleSphere count={isMobile ? 800 : 2800} />
-        </group>
-        <EffectComposer>
-          <Bloom luminanceThreshold={0.3} intensity={1.2} mipmapBlur />
-        </EffectComposer>
-      </Canvas>
+      {/* ── UI layer ── */}
+      <div className="hero-text-block">
+        <motion.p
+          className="section-label mb-6"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          Portfolio · 2025
+        </motion.p>
 
-      {/* ── UI layer (z-index 10) ── */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-20 pt-28 pb-16">
-        <div className="hero-text-container">
-          <motion.p
-            className="section-label mb-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+          <motion.div
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           >
-            Portfolio · 2025
-          </motion.p>
-
-          <motion.h1
-            className="font-space-grotesk font-black text-white leading-none mb-6 hero-title-fix"
-            style={{ fontSize: 'clamp(52px, 7vw, 88px)' }}
-            initial={{ opacity: 0, y: 60 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-          >
-            AKSHAY P
-          </motion.h1>
+            <motion.h1
+              className="font-space-grotesk font-black text-white leading-none mb-6 hero-title-fix"
+              style={{ fontSize: 'clamp(52px, 7vw, 88px)' }}
+              initial={{ opacity: 0, y: 60 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+            >
+              AKSHAY P
+            </motion.h1>
+          </motion.div>
 
           <motion.div
             className="flex items-center gap-3 mb-12 h-9"
@@ -303,19 +288,41 @@ const Hero = () => {
             </a>
           </motion.div>
 
-          {/* Location badge */}
           <motion.div
-            className="mt-16 flex items-center gap-2 text-white/30 text-sm font-inter"
+            style={{
+              fontFamily: "'Courier New', Courier, monospace",
+              fontSize: "13px",
+              color: "rgba(160, 170, 200, 0.65)",
+              letterSpacing: "0.05em",
+              borderLeft: "2px solid rgba(200, 255, 0, 0.3)",
+              paddingLeft: "12px",
+              marginTop: "28px"
+            }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.9 }}
+            transition={{ delay: 1.8, duration: 0.8 }}
           >
-            <span>📍</span>
-            <span>Kochi, Kerala</span>
-            <span className="mx-2 text-white/10">·</span>
-            <span>B.Tech CSE · Toc H Institute · 2027</span>
+            // B.Tech CSE · TIST Kochi · 2023 – 2027
           </motion.div>
-        </div>
+      </div>
+
+      {/* ── 3D Canvas ── */}
+      <div className="hero-canvas-block">
+        <Canvas
+          camera={{ position: [0, 0, 5], fov: 60 }}
+          gl={{ antialias: true, alpha: true }}
+        >
+          <ambientLight intensity={0.35} />
+          <directionalLight position={[5,  5, 5]}  intensity={1}   color="#c8ff00" />
+          <directionalLight position={[-5,-3,-5]} intensity={0.5} color="#6C63FF" />
+          {!isMobile && <AnimatedTorusKnot />}
+          <group position={[0, 0, 0]}>
+            <ParticleSphere count={isMobile ? 800 : 2800} />
+          </group>
+          <EffectComposer>
+            <Bloom luminanceThreshold={0.3} intensity={1.2} mipmapBlur />
+          </EffectComposer>
+        </Canvas>
       </div>
 
       {/* Scroll indicator */}
