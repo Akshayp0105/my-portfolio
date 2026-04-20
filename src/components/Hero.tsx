@@ -87,12 +87,10 @@ function AnimatedTorusKnot({ meshRef }: { meshRef: React.RefObject<THREE.Mesh> }
     if (meshRef.current) {
       meshRef.current.rotation.x = t * 0.3;
       meshRef.current.rotation.y = t * 0.2;
-      meshRef.current.position.set(0, 0, 0);
     }
     if (wireRef.current) {
       wireRef.current.rotation.x = t * 0.3;
       wireRef.current.rotation.y = t * 0.2;
-      wireRef.current.position.set(0, 0, 0);
     }
     if (matRef.current) {
       matRef.current.uniforms.uTime.value = t;
@@ -101,7 +99,7 @@ function AnimatedTorusKnot({ meshRef }: { meshRef: React.RefObject<THREE.Mesh> }
 
   return (
     <>
-      <mesh ref={meshRef} geometry={geomRef.current} position={[2.4, 0.2, 0]}>
+      <mesh ref={meshRef} geometry={geomRef.current} position={[2.2, 0, 0]}>
         <shaderMaterial
           ref={matRef}
           vertexShader={vertexShader}
@@ -109,7 +107,7 @@ function AnimatedTorusKnot({ meshRef }: { meshRef: React.RefObject<THREE.Mesh> }
           uniforms={{ uTime: { value: 0 } }}
         />
       </mesh>
-      <mesh ref={wireRef} geometry={geomRef.current} position={[2.4, 0.2, 0]}>
+      <mesh ref={wireRef} geometry={geomRef.current} position={[2.2, 0, 0]}>
         <meshBasicMaterial color="#c8ff00" wireframe opacity={0.25} transparent />
       </mesh>
     </>
@@ -123,10 +121,10 @@ function buildParticlePositions(count: number): Float32Array {
   for (let i = 0; i < count; i++) {
     // Fibonacci sphere distribution for even spread
     const y = 1 - (i / (count - 1)) * 2;
-    const radius = 2.8 * Math.sqrt(1 - y * y);
+    const radius = 2.4 * Math.sqrt(1 - y * y);
     const theta = phi * i;
     arr[i * 3]     = Math.cos(theta) * radius + (Math.random() - 0.5) * 0.08;
-    arr[i * 3 + 1] = y * 2.8            + (Math.random() - 0.5) * 0.08;
+    arr[i * 3 + 1] = y * 2.4            + (Math.random() - 0.5) * 0.08;
     arr[i * 3 + 2] = Math.sin(theta) * radius + (Math.random() - 0.5) * 0.08;
   }
   return arr;
@@ -216,7 +214,9 @@ function SceneContainer({ isMobile }: { isMobile: boolean }) {
 
   useFrame(() => {
     if (particlesRef.current && meshRef.current) {
-      particlesRef.current.position.x = meshRef.current.position.x;
+      // Offset particles by -0.35 in x to correct for perspective distortion
+      // so it visually centers perfectly around the mesh which is off-axis
+      particlesRef.current.position.x = meshRef.current.position.x - 0.35;
       particlesRef.current.position.y = meshRef.current.position.y;
     } else if (particlesRef.current && isMobile) {
       particlesRef.current.position.x = 2.4;
