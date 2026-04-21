@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import CustomCursor from './components/CustomCursor';
 import Preloader from './components/Preloader';
 import Hero from './components/Hero';
+import Logo3D from './components/Logo3D';
 import './style.css';
 
 const About = React.lazy(() => import('./components/About'));
@@ -70,10 +71,10 @@ function App() {
           {/* Logo */}
           <a
             href="#hero"
-            className="font-space-grotesk font-extrabold text-lg leading-none"
-            style={{ color: 'var(--lime)' }}
+            className="flex items-center justify-center relative"
+            aria-label="Home"
           >
-            AP
+            <Logo3D />
           </a>
 
           {/* Links */}
