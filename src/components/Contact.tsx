@@ -1,3 +1,4 @@
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 const links = [
@@ -124,4 +125,58 @@ const Contact = () => (
   </section>
 );
 
-export default Contact;
+/* 🥚 Easter egg #5 — click ☕️ 7 times to unlock ∞ cups consumed */
+function FooterCoffee() {
+  const [coffeeClicks, setCoffeeClicks] = useState(0);
+  const [unlocked, setUnlocked] = useState(false);
+  const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleCoffeeClick = () => {
+    if (unlocked) return;
+    const next = coffeeClicks + 1;
+    if (resetTimer.current) clearTimeout(resetTimer.current);
+    if (next >= 7) {
+      setUnlocked(true);
+      return;
+    }
+    setCoffeeClicks(next);
+    resetTimer.current = setTimeout(() => setCoffeeClicks(0), 2000);
+  };
+
+  return (
+    <motion.p
+      className="text-white/20 font-inter text-sm mt-20"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      transition={{ delay: 0.6 }}
+      viewport={{ once: true }}
+    >
+      © 2025 Akshay P · Built with React, Three.js ·{' '}
+      <span
+        onClick={handleCoffeeClick}
+        style={{
+          cursor: 'default',
+          display: 'inline-block',
+          transition: 'filter 0.2s',
+          filter: coffeeClicks > 0 ? `brightness(${1 + coffeeClicks * 0.15})` : 'none',
+          userSelect: 'none',
+        }}
+        title={unlocked ? '∞ cups consumed' : coffeeClicks > 0 ? `${7 - coffeeClicks} more...` : undefined}
+      >
+        {unlocked ? (
+          <motion.span
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            style={{ color: '#c8ff00', fontSize: '0.8rem' }}
+          >
+            ∞ cups consumed ☕️
+          </motion.span>
+        ) : (
+          <span style={{ letterSpacing: '0.05em' }}>☕️</span>
+        )}
+      </span>
+    </motion.p>
+  );
+}
+
+const Contact = () => (

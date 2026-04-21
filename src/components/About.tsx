@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion, useInView, useMotionValue, useSpring } from 'framer-motion';
+import { motion, AnimatePresence, useInView, useMotionValue, useSpring } from 'framer-motion';
 
 /* ── Animated count-up stat ──────────────────────────────────────────────── */
 function AnimatedNumber({ target, suffix = '+' }: { target: number; suffix?: string }) {
@@ -26,6 +26,57 @@ const stats = [
   { number: 50, label: 'Interviews Conducted', suffix: '+' },
   { number: 1,  label: 'Startup Founded', suffix: '' },
 ];
+
+/* 🥚 Easter egg #2 — hover "Kochi, Kerala" for 2 seconds */
+function KochiEasterEgg() {
+  const [showPalm, setShowPalm] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleEnter = () => {
+    timerRef.current = setTimeout(() => setShowPalm(true), 2000);
+  };
+  const handleLeave = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setShowPalm(false);
+  };
+
+  return (
+    <p className="text-white/70 font-inter leading-relaxed mb-6 max-w-md" style={{ position: 'relative' }}>
+      I'm Akshay P — a 20-year-old startup founder, Full Stack Developer, and community
+      builder from{' '}
+      <span
+        onMouseEnter={handleEnter}
+        onMouseLeave={handleLeave}
+        style={{ cursor: 'default', borderBottom: '1px dashed rgba(200,255,0,0.25)', paddingBottom: '1px' }}
+      >
+        Kochi, Kerala
+      </span>
+      . I turn ideas into products people actually use.
+      <AnimatePresence>
+        {showPalm && (
+          <motion.span
+            initial={{ opacity: 0, y: 8, scale: 0.7 }}
+            animate={{ opacity: 1, y: -4, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.6, y: -12 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: '-2.2rem',
+              fontSize: '1.5rem',
+              filter: 'drop-shadow(0 0 8px rgba(200,100,0,0.7))',
+              pointerEvents: 'none',
+              userSelect: 'none',
+            }}
+            title="God's Own Country 🌊"
+          >
+            🌴
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </p>
+  );
+}
 
 const About = () => {
   return (
@@ -58,10 +109,7 @@ const About = () => {
               <span className="gradient-text">intersection</span> of <br />
               design & code.
             </h2>
-            <p className="text-white/70 font-inter leading-relaxed mb-6 max-w-md">
-              I'm Akshay P — a 20-year-old startup founder, Full Stack Developer, and community
-              builder from Kochi, Kerala. I turn ideas into products people actually use.
-            </p>
+            <KochiEasterEgg />
             <p className="text-white/50 font-inter leading-relaxed max-w-md text-sm">
               Currently pursuing B.Tech CSE at Toc H Institute of Science & Technology (Graduating June 2027),
               while co-founding{' '}
@@ -119,6 +167,7 @@ const About = () => {
                 className="glass card p-6 rounded-xl"
                 whileHover={{ scale: 1.04, borderColor: 'rgba(200,255,0,0.2)' }}
                 transition={{ delay: i * 0.08 }}
+                title={i === 3 ? '🏛 DIPP registered · GOI recognised' : undefined}
               >
                 <div
                   className="font-space-grotesk font-bold mb-1"

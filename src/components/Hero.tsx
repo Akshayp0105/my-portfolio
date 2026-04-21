@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
-import { motion, useMotionValue, useTransform, animate, useSpring } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useTransform, animate, useSpring } from 'framer-motion';
 
 function StatCounter({ end, suffix = "", label }: { end: number, suffix?: string, label: string }) {
   const count = useMotionValue(0);
@@ -241,6 +241,43 @@ function SceneContainer({ isMobile }: { isMobile: boolean }) {
 /* ── Hero ─────────────────────────────────────────────────────────────────── */
 const Hero = () => {
   const [isMobile, setIsMobile] = useState(false);
+  const [nameClickCount, setNameClickCount] = useState(0);
+  const [showTerminal, setShowTerminal] = useState(false);
+  const nameClickTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // 🥚 Easter egg #1 — click name 5× to unlock Co-Founder mode
+  const handleNameClick = useCallback(() => {
+    setNameClickCount(prev => {
+      const next = prev + 1;
+      if (nameClickTimer.current) clearTimeout(nameClickTimer.current);
+      if (next >= 5) {
+        setShowTerminal(true);
+        setTimeout(() => setShowTerminal(false), 4000);
+        return 0;
+      }
+      nameClickTimer.current = setTimeout(() => setNameClickCount(0), 1800);
+      return next;
+    });
+  }, []);
+
+  // 🥚 Easter egg #6 — console ASCII art
+  useEffect(() => {
+    const styles = [
+      'color: #c8ff00; font-size: 11px; font-family: monospace;',
+      'color: #6C63FF; font-size: 11px; font-family: monospace;',
+      'color: rgba(255,255,255,0.4); font-size: 10px; font-family: monospace;',
+    ];
+    console.log(
+      '%c █████╗ ██╗  ██╗███████╗██╗  ██╗ █████╗ ██╗   ██╗\n' +
+      '%c██╔══██╗██║ ██╔╝██╔════╝██║  ██║██╔══██╗╚██╗ ██╔╝\n' +
+      '%c███████║█████╔╝ ███████╗███████║███████║ ╚████╔╝ \n' +
+      '  ██╔══██║██╔═██╗ ╚════██║██╔══██║██╔══██║  ╚██╔╝  \n' +
+      '  ██║  ██║██║  ██╗███████║██║  ██║██║  ██║   ██║   \n' +
+      '  ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   \n',
+      styles[0], styles[1], styles[2]
+    );
+    console.log('%c👋 Hey curious dev! You found the console.\ngithub.com/Akshayp0105 — 40+ repos & counting.\nP.S. There are more Easter eggs on this page... 🥚', 'color:#c8ff00;font-family:monospace;font-size:12px;');
+  }, []);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
@@ -321,10 +358,12 @@ const Hero = () => {
           >
             <motion.h1
               className="font-space-grotesk font-black text-white leading-none mb-6 hero-title-fix"
-              style={{ fontSize: 'clamp(52px, 7vw, 88px)' }}
+              style={{ fontSize: 'clamp(52px, 7vw, 88px)', cursor: 'default', userSelect: 'none' }}
               initial={{ opacity: 0, y: 60 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+              onClick={handleNameClick}
+              title={nameClickCount > 0 ? `${5 - nameClickCount} more...` : undefined}
             >
               AKSHAY P
             </motion.h1>
@@ -451,6 +490,41 @@ const Hero = () => {
           transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
         />
       </motion.div>
+      {/* 🥚 Easter egg #1 terminal popup */}
+      <AnimatePresence>
+        {showTerminal && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.97 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              position: 'fixed',
+              bottom: '6rem',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 9999,
+              background: 'rgba(10,10,15,0.96)',
+              border: '1px solid rgba(200,255,0,0.35)',
+              borderRadius: '8px',
+              padding: '14px 20px',
+              fontFamily: "'Courier New', monospace",
+              fontSize: '13px',
+              color: '#c8ff00',
+              letterSpacing: '0.04em',
+              boxShadow: '0 0 32px rgba(200,255,0,0.12)',
+              pointerEvents: 'none',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <span style={{ color: 'rgba(255,255,255,0.3)' }}>$ </span>
+            boot Korvet.exe<br />
+            <span style={{ color: 'rgba(255,255,255,0.3)' }}>&gt; </span>
+            Co-Founder &amp; CTO mode activated 🚀
+            <span style={{ display:'inline-block', width:'8px', height:'1em', background:'#c8ff00', marginLeft:'4px', verticalAlign:'middle', animation:'blink 1s step-end infinite' }} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion';
+import { useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Tilt from 'react-parallax-tilt';
 
 const projects = [
@@ -54,7 +55,27 @@ const projects = [
 
 type Project = typeof projects[0];
 
-const ProjectCard = ({ project, index }: { project: Project; index: number }) => (
+/* 🥚 Easter egg #3 — triple-click GasUllavidu to see its Malayalam name */
+const ProjectCard = ({ project, index }: { project: Project; index: number }) => {
+  const [clickCount, setClickCount] = useState(0);
+  const [showMalayalam, setShowMalayalam] = useState(false);
+  const clickTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleTitleClick = () => {
+    if (project.title !== 'GasUllavidu') return;
+    const next = clickCount + 1;
+    if (clickTimer.current) clearTimeout(clickTimer.current);
+    if (next >= 3) {
+      setShowMalayalam(true);
+      setTimeout(() => setShowMalayalam(false), 2500);
+      setClickCount(0);
+    } else {
+      setClickCount(next);
+      clickTimer.current = setTimeout(() => setClickCount(0), 1200);
+    }
+  };
+
+  return (
   <motion.div
     className="h-full"
     initial={{ opacity: 0, y: 50 }}
@@ -83,10 +104,7 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
         {/* Top accent bar */}
         <div
           className="h-1 w-full rounded-full mb-5 transition-all duration-300 group-hover:shadow-lg"
-          style={{
-            background: project.color,
-            boxShadow: `0 0 0 transparent`,
-          }}
+          style={{ background: project.color, boxShadow: `0 0 0 transparent` }}
           onMouseEnter={(e) => {
             (e.currentTarget as HTMLDivElement).style.boxShadow = `0 0 16px ${project.color}80`;
           }}
@@ -96,16 +114,34 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
         />
 
         {/* Tag */}
-        <span
-          className="self-start text-xs font-inter px-3 py-1 rounded-full
-                     bg-white/5 border border-white/10 text-white/60 mb-4"
-        >
+        <span className="self-start text-xs font-inter px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/60 mb-4">
           {project.tag}
         </span>
 
-        {/* Title */}
-        <h3 className="text-xl font-space-grotesk font-semibold text-white mb-2 leading-snug">
-          {project.title}
+        {/* Title — GasUllavidu has a hidden triple-click Easter egg */}
+        <h3
+          className="text-xl font-space-grotesk font-semibold text-white mb-2 leading-snug"
+          style={{ position: 'relative', cursor: project.title === 'GasUllavidu' ? 'default' : undefined }}
+          onClick={handleTitleClick}
+        >
+          <AnimatePresence mode="wait">
+            {showMalayalam ? (
+              <motion.span
+                key="malayalam"
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 6 }}
+                transition={{ duration: 0.25 }}
+                style={{ color: '#ff6b6b', fontFamily: 'serif', fontSize: '1rem' }}
+              >
+                ഗ്യാസ് ഉള്ളവിടു! 🔥
+              </motion.span>
+            ) : (
+              <motion.span key="title" initial={{ opacity: 1 }} animate={{ opacity: 1 }}>
+                {project.title}
+              </motion.span>
+            )}
+          </AnimatePresence>
         </h3>
 
         {/* Description */}
@@ -136,7 +172,8 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
       </a>
     </Tilt>
   </motion.div>
-);
+  );
+};
 
 const Projects = () => {
   return (
