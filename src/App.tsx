@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import CustomCursor from './components/CustomCursor';
 import Preloader from './components/Preloader';
@@ -23,6 +23,34 @@ function App() {
   const [loaded, setLoaded] = useState(false);
   const [scrollWidth, setScrollWidth] = useState(0);
 
+  // 🥚 Easter egg #4 — type "korvet" anywhere to trigger founder mode
+  const [korvetActive, setKorvetActive] = useState(false);
+  const typedRef = useRef('');
+  const korvetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const SECRET = 'korvet';
+    const handleKey = (e: KeyboardEvent) => {
+      // Don't fire if user is typing in an input/textarea
+      const tag = (e.target as HTMLElement).tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+      typedRef.current = (typedRef.current + e.key).slice(-SECRET.length);
+      if (korvetTimer.current) clearTimeout(korvetTimer.current);
+      korvetTimer.current = setTimeout(() => { typedRef.current = ''; }, 1500);
+      if (typedRef.current.toLowerCase() === SECRET) {
+        typedRef.current = '';
+        setKorvetActive(true);
+        document.body.classList.add('korvet-mode');
+        setTimeout(() => {
+          setKorvetActive(false);
+          document.body.classList.remove('korvet-mode');
+        }, 3000);
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, []);
+
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
@@ -35,6 +63,45 @@ function App() {
 
   return (
     <div className="noise-bg min-h-screen font-inter" style={{ background: 'var(--bg)' }}>
+      {/* 🥚 Easter egg #4 — "korvet" toast */}
+      <AnimatePresence>
+        {korvetActive && (
+          <motion.div
+            key="korvet-toast"
+            initial={{ opacity: 0, y: 30, scale: 0.92 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              position: 'fixed',
+              bottom: '2.5rem',
+              right: '2rem',
+              zIndex: 99998,
+              background: 'rgba(10,10,15,0.97)',
+              border: '1px solid rgba(255,215,0,0.45)',
+              borderRadius: '10px',
+              padding: '12px 18px',
+              fontFamily: "'Inter', sans-serif",
+              fontSize: '13px',
+              color: '#ffd700',
+              boxShadow: '0 0 24px rgba(255,215,0,0.18)',
+              pointerEvents: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+            }}
+          >
+            <span style={{ fontSize: '1.1rem' }}>🏛</span>
+            <span>
+              <strong>Korvet Innovations</strong> — Founder mode ON
+              <span style={{ display: 'block', fontSize: '10px', color: 'rgba(255,215,0,0.5)', marginTop: '2px' }}>
+                GOI recognised · EdTech · May 2025 – Present
+              </span>
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Scroll Progress Bar */}
       <div 
         style={{ 

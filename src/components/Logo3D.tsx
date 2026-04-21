@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Float } from '@react-three/drei';
 import * as THREE from 'three';
@@ -11,7 +11,7 @@ function AtomShape() {
   
   const [hovered, setHovered] = useState(false);
 
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
     if (groupRef.current) {
       groupRef.current.rotation.y += delta * (hovered ? 2 : 0.5);
       groupRef.current.rotation.z += delta * (hovered ? 1 : 0.2);

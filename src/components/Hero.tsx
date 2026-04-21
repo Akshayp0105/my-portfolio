@@ -73,7 +73,7 @@ const fragmentShader = /* glsl */ `
 `;
 
 /* ── Animated TorusKnot ──────────────────────────────────────────────────── */
-function AnimatedTorusKnot({ meshRef }: { meshRef: React.RefObject<THREE.Mesh> }) {
+function AnimatedTorusKnot({ meshRef }: { meshRef: React.RefObject<THREE.Mesh | null> }) {
   const wireRef  = useRef<THREE.Mesh>(null);
   const matRef   = useRef<THREE.ShaderMaterial>(null);
   const geomRef  = useRef<THREE.TorusKnotGeometry | null>(null);
@@ -130,7 +130,7 @@ function buildParticlePositions(count: number): Float32Array {
   return arr;
 }
 
-function ParticleSphere({ count, particlesRef }: { count: number, particlesRef: React.RefObject<THREE.Points> }) {
+function ParticleSphere({ count, particlesRef }: { count: number, particlesRef: React.RefObject<THREE.Points | null> }) {
   const geoRef    = useRef<THREE.BufferGeometry>(null);
   const mouseVec  = useRef(new THREE.Vector2(0, 0));
   const { camera } = useThree();

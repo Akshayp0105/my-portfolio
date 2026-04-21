@@ -340,3 +340,15 @@ body {
   }
 }
 
+/* ── 🥚 Easter egg #4: korvet-mode — all skill chips glow gold ── */
+@keyframes korvet-glow {
+  0%   { box-shadow: 0 0 0 0 rgba(255,215,0,0); border-color: transparent; color: inherit; }
+  25%  { box-shadow: 0 0 18px 2px rgba(255,215,0,0.55); border-color: rgba(255,215,0,0.6); color: #ffd700; }
+  75%  { box-shadow: 0 0 18px 2px rgba(255,215,0,0.55); border-color: rgba(255,215,0,0.6); color: #ffd700; }
+  100% { box-shadow: 0 0 0 0 rgba(255,215,0,0); border-color: transparent; color: inherit; }
+}
+
+body.korvet-mode .skill-chip {
+  animation: korvet-glow 3s ease forwards;
+}
+
