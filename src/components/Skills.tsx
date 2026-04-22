@@ -9,7 +9,7 @@ const GLOBE_SKILLS = [
   'React', 'Node.js', 'Python', 'MySQL', 'Django', 'Git', 'Figma',
   'Three.js', 'Express', 'JavaScript', 'HTML5', 'CSS3',
   'Leadership', 'Project Management',
-  'TypeScript', 'Next.js', 'Firebase', 'Supabase', 'MongoDB', 'Kubernetes', 'Jira', 'Tableau', 'Docker'
+  'TypeScript', 'Next.js', 'Firebase', 'Supabase', 'MongoDB', 'Kubernetes', 'Jira', 'Tableau', 'Docker', 'AI Agents'
 ];
 
 const SKILL_CATEGORIES = [
@@ -27,7 +27,7 @@ const SKILL_CATEGORIES = [
   },
   {
     label: 'Exploring',
-    skills: ['DevOps', 'Android Development', 'IoT', 'Cloud Architecture'],
+    skills: ['DevOps', 'Android Development', 'IoT', 'Cloud Architecture', 'AI Agents'],
     isExploring: true
   }
 ];
@@ -159,6 +159,7 @@ const chipColors: Record<string, string> = {
   'Android Development': '#3ddc84',
   IoT: '#c8ff00',
   'Cloud Architecture': '#6C63FF',
+  'AI Agents': '#FF6B6B',
 };
 
 const Skills = () => (

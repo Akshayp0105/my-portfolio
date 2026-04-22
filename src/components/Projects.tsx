@@ -51,6 +51,14 @@ const projects = [
     color: '#c8ff00',
     link: 'https://github.com/Korvetin/KorvetWeb',
   },
+  {
+    title: 'Agentic Portfolio',
+    description: 'This very portfolio you are browsing, now being enhanced by Antigravity, a powerful AI coding agent.',
+    tech: ['React', 'Three.js', 'Framer Motion', 'Tailwind'],
+    tag: 'Collaboration',
+    color: '#ff00ff',
+    link: 'https://github.com/Akshayp0105/my-portfolio',
+  },
 ];
 
 type Project = typeof projects[0];
